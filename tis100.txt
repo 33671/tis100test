@@ -1,0 +1,7 @@
+x:mov 8 acc
+abc:sub 1
+#sav
+jgz abc
+1:
+add 4
+#jro 0
