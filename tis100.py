@@ -64,7 +64,7 @@ class Computer:
     async def block_waiting_for_data(self, data_source: str) -> int:
         return 1
 
-    def natural_increment(self, index: int) -> int:
+    def pc_increment(self, index: int) -> int:
         length = len(self.instructions)
         index += 1
         if index >= length:
@@ -143,7 +143,7 @@ class Computer:
                     raise NotImplementedError()
             else:
                 raise NotImplementedError()
-            return self.natural_increment(ins.LineIndex)
+            return self.pc_increment(ins.LineIndex)
         elif ins.Op == "add":
             if type(ins.Src) == int:
                 self.ACC += ins.Src
@@ -151,7 +151,7 @@ class Computer:
                 self.ACC *= 2
             else:
                 raise NotImplementedError()
-            return self.natural_increment(ins.LineIndex)
+            return self.pc_increment(ins.LineIndex)
         elif ins.Op == "sub":
             if type(ins.Src) == int:
                 self.ACC -= ins.Src
@@ -159,27 +159,27 @@ class Computer:
                 self.ACC = 0
             else:
                 raise NotImplementedError()
-            return self.natural_increment(ins.LineIndex)
+            return self.pc_increment(ins.LineIndex)
         elif ins.Op == "jgz":
             if self.ACC > 0:
                 return self.labels_index[ins.Label]
             else:
-                return self.natural_increment(ins.LineIndex)
+                return self.pc_increment(ins.LineIndex)
         elif ins.Op == "jlz":
             if self.ACC < 0:
                 return self.labels_index[ins.Label]
             else:
-                return self.natural_increment(ins.LineIndex)
+                return self.pc_increment(ins.LineIndex)
         elif ins.Op == "jez":
             if self.ACC == 0:
                 return self.labels_index[ins.Label]
             else:
-                return self.natural_increment(ins.LineIndex)
+                return self.pc_increment(ins.LineIndex)
         elif ins.Op == "jnz":
             if self.ACC != 0:
                 return self.labels_index[ins.Label]
             else:
-                return self.natural_increment(ins.LineIndex)
+                return self.pc_increment(ins.LineIndex)
         elif ins.Op == "jmp":
             return self.labels_index[ins.Label]
         elif ins.Op == "jro":
@@ -194,17 +194,17 @@ class Computer:
             return jump_dest
         elif ins.Op == "neg":
             self.ACC = -self.ACC
-            return self.natural_increment(ins.LineIndex)
+            return self.pc_increment(ins.LineIndex)
         elif ins.Op == "swp":
             temp = self.ACC
             self.ACC = self.BAK
             self.BAK = temp
-            return self.natural_increment(ins.LineIndex)
+            return self.pc_increment(ins.LineIndex)
         elif ins.Op == "sav":
             self.BAK = self.ACC
-            return self.natural_increment(ins.LineIndex)
+            return self.pc_increment(ins.LineIndex)
         elif ins.Op == "nop":
-            return self.natural_increment(ins.LineIndex)
+            return self.pc_increment(ins.LineIndex)
 
     def excute_next(self):
         self.line_number_to_run = self.excute_line(self.line_number_to_run)
