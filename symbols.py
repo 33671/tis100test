@@ -1,4 +1,4 @@
-#len = 13
+# len = 13
 operate_list = [
     "mov",
     "add",
@@ -33,49 +33,32 @@ def is_literal(str: str):
 
 
 def is_reg(str: str):
-    for reg in regs_list:
-        if reg == str:
-            return True
-    return False
+    return str in regs_list
 
 
 def is_position_reg(posi_str: str):
-    for reg in regs_list[:-2]:
-        if reg == posi_str:
-            return True
-    return False
+    return posi_str in regs_list[:-2]
+
+
+def is_position_source_reg(posi_str: str):
+    return posi_str in regs_list[:-3]
 
 
 def is_source_reg(reg_str: str):
-    for reg in regs_list[:4] + ["acc", "any"]:
-        if reg == reg_str:
-            return True
-    return False
+    return reg_str in (regs_list[:6] + ["acc"])
 
 
 def is_dest_reg(reg_str: str):
-    for reg in regs_list[:4] + ["acc", "nil"]:
-        if reg == reg_str:
-            return True
-    return False
+    return reg_str in regs_list[:8]
 
 
 def is_operater(str: str):
-    for operate in operate_list:
-        if operate == str:
-            return True
-    return False
+    return str in operate_list
 
 
 def is_no_parameter_op(str: str):
-    for op in operate_list[-4:]:
-        if op == str:
-            return True
-    return False
+    return str in operate_list[-4:]
 
 
 def is_jump_label_op(str: str):
-    for op in ["jmp", "jez", "jgz", "jlz", "jnz"]:
-        if op == str:
-            return True
-    return False
+    return str in ["jmp", "jez", "jgz", "jlz", "jnz"]
