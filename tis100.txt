@@ -1,4 +1,4 @@
-x:mov up acc
+x:mov any acc
 sub 5
 jgz x
 jro 0

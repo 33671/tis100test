@@ -6,6 +6,7 @@ from instruction import Instruction
 from syntax import gen_syntax
 from grid import channels
 
+
 class Computer:
     def __init__(self, x: int, y: int, program_file: str) -> None:
         self.X: int = x
@@ -56,29 +57,64 @@ class Computer:
         self.is_waiting_for_input = True
         # TODO: read ANY LAST
         if data_source == 'any':
-            await asyncio.Future()
+            tasks = {}
+            for direction in ["up", "down", "left", "right"]:
+                direct_task = asyncio.create_task(
+                    self.get_read_neighbor_channel(direction).read())
+                tasks[direct_task] = direction
+            done, pending = await asyncio.wait(tasks.keys(), return_when=asyncio.FIRST_COMPLETED)
+            for task in pending:
+                task.cancel()
+            for task in done:
+                last = tasks[task]
+                self.LAST = last
+                read_data = task.result()
+                print(
+                    f"<-- {self.X}${self.Y} data read from any:{last} = {read_data}")
+                self.is_waiting_for_input = False
+                return read_data
+            return
         if data_source == 'last':
-            await asyncio.Future()
+            chan = self.get_read_neighbor_channel(self.LAST)
+            read_data = await chan.read()
+            self.is_waiting_for_input = False
+            return read_data
         chan = self.get_read_neighbor_channel(data_source)
         item = await chan.read()
         print(f"<-- {self.X}${self.Y} data read: {data_source} = {item}")
         self.is_waiting_for_input = False
         return item
 
-    async def block_waiting_send(self, data: int, position: str):
-        print(f"--> {self.X}${self.Y} sending {data} {position}")
+    async def block_waiting_send(self, data: int, dest_position: str):
+        print(f"--> {self.X}${self.Y} sending {data} {dest_position}")
         self.is_waiting_for_output = True
         # TODO: write ANY LAST
-        if position == "any":
-            await asyncio.Future()
-        if position == "last":
-            await asyncio.Future()
-        if position == "nil":
+        if dest_position == "any":
+            tasks = {}
+            for direction in ["up", "down", "left", "right"]:
+                direct_task = asyncio.create_task(
+                    self.get_write_neighbor_channel(direction).send(data))
+                tasks[direct_task] = direction
+            done, pending = await asyncio.wait(tasks.keys(), return_when=asyncio.FIRST_COMPLETED)
+            for task in pending:
+                task.cancel()
+            for task in done:
+                last = tasks[task]
+                self.LAST = last
+                break
+            self.is_waiting_for_output = False
             return
-        chan = self.get_write_neighbor_channel(position)
+        if dest_position == "last":
+            chan = self.get_write_neighbor_channel(self.LAST)
+            await chan.send(data)
+            self.is_waiting_for_output = False
+            return
+        if dest_position == "nil":
+            return
+        chan = self.get_write_neighbor_channel(dest_position)
         await chan.send(data)
         self.is_waiting_for_output = False
-        print(f"--> {self.X}${self.Y} data {data} sent {position}")
+        print(f"--> {self.X}${self.Y} data {data} sent {dest_position}")
 
     def get_write_neighbor_channel_posi(self, position: str) -> str:
         dict_key = ""

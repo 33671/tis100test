@@ -6,7 +6,7 @@ from puter import Computer
 async def input_puter():
     com = Computer(0, -1, "input.txt")
     while True:
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.5)
         await com.excute_next()
         print(f"{com.X}${com.Y} acc", com.ACC)
 
@@ -14,7 +14,7 @@ async def input_puter():
 async def main():
     com = Computer(0, 0, "tis100.txt")
     while True:
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.2)
         await com.excute_next()
         print(f"{com.X}${com.Y} acc", com.ACC)
 

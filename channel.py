@@ -2,15 +2,14 @@ import asyncio
 
 
 class DataChannel:
-    Data: int = None
-    condition: asyncio.Condition
 
-    is_sending = False
-
-    is_reading = False
-
+   
     def __init__(self) -> None:
         self.condition = asyncio.Condition()
+        self.Data: int = None
+        self.is_sending = False
+        self.is_reading = False
+
 
     async def send(self, item: int):
         self.is_sending = True
