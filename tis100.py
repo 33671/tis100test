@@ -22,7 +22,7 @@ async def output_puter():
 
 async def run_computer(com: Computer):
     while True:
-        await asyncio.sleep(0.1)
+        # await asyncio.sleep(1)
         await com.excute_next()
 
 
@@ -32,14 +32,14 @@ def load_and_run(x: int, y: int, program: str):
 
 
 async def main():
-    load_and_run(1, 0, "MOV UP RIGHT")
-    load_and_run(2, 0, "MOV LEFT DOWN")
+    load_and_run(1, 0, "MOV UP ANY")
+    load_and_run(2, 0, "MOV ANY ANY")
     load_and_run(2, 1, """
-MOV UP ACC
+MOV ANY ACC
 ADD ACC
 MOV ACC DOWN 
         """)
-    load_and_run(2, 2, "MOV UP DOWN")
+    load_and_run(2, 2, "MOV ANY DOWN")
 
 
 loop.create_task(input_puter())

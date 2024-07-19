@@ -240,8 +240,10 @@ class Computer:
                 if offset == 0:
                     # program halt
                     await asyncio.Future()
-            else:
+            elif ins.Src == "acc":
                 offset = self.ACC
+            else:
+                offset = await self.block_waiting_for_data_from(ins.Src)
             jump_dest = ins.LineIndex + offset
             if jump_dest < 0 or jump_dest >= len(self.instructions):
                 jump_dest = 0

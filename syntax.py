@@ -29,7 +29,7 @@ def gen_syntax(lines: List[List[str]], labels_index: Dict[str, int]) -> bool | L
                 instructions.append(Instruction(
                     op=line[0], line_index=line_index, label=line[1]))
             elif line[0] == 'jro':  # jro
-                if not (is_literal(line[1]) or line[1] == "acc"):
+                if not (is_literal(line[1]) or is_position_source_reg(line[1])):
                     print("invalid jro source", line)
                     return False
                 instructions.append(Instruction(
