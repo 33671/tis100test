@@ -8,7 +8,7 @@ from grid import channels
 
 
 class Computer:
-    def __init__(self, x: int, y: int, program_file: str) -> None:
+    def __init__(self, x: int, y: int, program: str | None = None) -> None:
         self.X: int = x
         self.Y: int = y
         self.lines: List[List[str]] = []
@@ -20,34 +20,37 @@ class Computer:
         self.ACC: int = 0
         self.BAK: int = 0
         self.LAST: str = "up"
-        with open(program_file, "r") as f:
-            file_lines = f.readlines()
-            for line in file_lines:
-                line_trimed = line.strip().lower().replace(",", " ")
-                if line_trimed.startswith("#"):
+        if program is None:
+            return
+        file_lines = program.splitlines()
+        for line in file_lines:
+            line_trimed = line.strip().lower().replace(",", " ")
+            if line_trimed.startswith("#") or line_trimed == "":
+                self.lines.append(["nop"])
+                continue
+            if line_trimed.find(":") != -1:
+                label_and_code = [x.strip()
+                                  for x in line_trimed.split(":")]
+                if len(label_and_code) != 2 or len(label_and_code[0]) == 0:
+                    raise Exception("bad lable syntax")
+                if label_and_code[1].strip() == "":  # bare lable
+                    self.labels_index[label_and_code[0].strip()] = len(
+                        self.lines)
+                    self.lines.append(["nop"])
                     continue
-                if line_trimed.find(":") != -1:
-                    label_and_code = [x.strip()
-                                      for x in line_trimed.split(":")]
-                    if len(label_and_code) != 2 or len(label_and_code[0]) == 0:
-                        raise Exception("bad lable syntax")
-                    if label_and_code[1].strip() == "":  # bare lable
-                        self.labels_index[label_and_code[0].strip()] = len(
-                            self.lines)
-                        continue
-                    else:  # lable and code
-                        self.labels_index[label_and_code[0].strip()] = len(
-                            self.lines)
-                        self.lines.append([i for i in label_and_code[1].split(
-                            " ") if i != "" and i != " "])
-                        continue
-                line_elements = [i for i in line_trimed.split(
-                    " ") if i != "" and i != " "]
-                self.lines.append(line_elements)
+                else:  # lable and code
+                    self.labels_index[label_and_code[0].strip()] = len(
+                        self.lines)
+                    self.lines.append([i for i in label_and_code[1].split(
+                        " ") if i != "" and i != " "])
+                    continue
+            line_elements = [i for i in line_trimed.split(
+                " ") if i != "" and i != " "]
+            self.lines.append(line_elements)
         print("labels:", self.labels_index)
         inses = gen_syntax(self.lines, self.labels_index)
         if type(inses) == bool:
-            raise Exception("syntax error")
+            raise Exception("!syntax error")
         else:
             self.instructions = inses
             print(self.instructions)
@@ -55,7 +58,6 @@ class Computer:
     async def block_waiting_for_data_from(self, data_source: str) -> int:
         print(f"<-- {self.X}${self.Y} waiting read from {data_source}")
         self.is_waiting_for_input = True
-        # TODO: read ANY LAST
         if data_source == 'any':
             tasks = {}
             for direction in ["up", "down", "left", "right"]:
@@ -88,7 +90,6 @@ class Computer:
     async def block_waiting_send(self, data: int, dest_position: str):
         print(f"--> {self.X}${self.Y} sending {data} {dest_position}")
         self.is_waiting_for_output = True
-        # TODO: write ANY LAST
         if dest_position == "any":
             tasks = {}
             for direction in ["up", "down", "left", "right"]:

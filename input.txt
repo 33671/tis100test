@@ -1,6 +1,0 @@
-mov 10 acc
-start:
-mov acc any
-sub 1
-jgz start
-jro 0

@@ -1,1 +1,6 @@
 __pycache__
+*.otf
+*.ttf
+*.zip
+*.7z
+*.exe

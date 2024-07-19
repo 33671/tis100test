@@ -1,4 +1,0 @@
-x:mov any acc
-sub 5
-jgz x
-jro 0
