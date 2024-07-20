@@ -237,13 +237,13 @@ class Computer:
             offset = 0
             if is_literal(ins.Src):
                 offset = int(ins.Src)
-                if offset == 0:
-                    # program halt
-                    await asyncio.Future()
             elif ins.Src == "acc":
                 offset = self.ACC
             else:
                 offset = await self.block_waiting_for_data_from(ins.Src)
+            if offset == 0:
+                # program halt
+                await asyncio.Future()
             jump_dest = ins.LineIndex + offset
             if jump_dest < 0 or jump_dest >= len(self.instructions):
                 jump_dest = 0
