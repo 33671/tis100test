@@ -20,6 +20,7 @@ class Computer:
         self.ACC: int = 0
         self.BAK: int = 0
         self.LAST: str = "up"
+        self.is_running = False
         if program is None:
             return
         file_lines = program.splitlines()
@@ -75,6 +76,7 @@ class Computer:
                     f"<-- {self.X}${self.Y} data read from any:{last} = {read_data}")
                 self.is_waiting_for_input = False
                 return read_data
+            self.is_waiting_for_input = False
             return
         if data_source == 'last':
             chan = self.get_read_neighbor_channel(self.LAST)
@@ -111,6 +113,7 @@ class Computer:
             self.is_waiting_for_output = False
             return
         if dest_position == "nil":
+            self.is_waiting_for_output = False
             return
         chan = self.get_write_neighbor_channel(dest_position)
         await chan.send(data)
@@ -164,6 +167,7 @@ class Computer:
 
     async def excute_line(self, index: int) -> int:
         if len(self.instructions) == 0 or len(self.instructions) <= index:
+            self.is_waiting_for_input = True
             await asyncio.Future()
         ins = self.instructions[index]
         print(f"{self.X}${self.Y} current:", ins)
@@ -243,6 +247,7 @@ class Computer:
                 offset = await self.block_waiting_for_data_from(ins.Src)
             if offset == 0:
                 # program halt
+                self.is_waiting_for_input = True
                 await asyncio.Future()
             jump_dest = ins.LineIndex + offset
             if jump_dest < 0 or jump_dest >= len(self.instructions):
@@ -263,5 +268,17 @@ class Computer:
             return self.pc_increment(ins.LineIndex)
 
     async def excute_next(self):
+        self.is_running = True
         self.line_number_to_run = await self.excute_line(self.line_number_to_run)
+        self.is_running = False
         return self
+
+    async def is_blocking(self):
+        if self.is_running or self.is_waiting_for_input or self.is_waiting_for_output:
+            return True
+        return False
+
+    async def try_step_forward(self):
+        if self.is_blocking():
+            return self
+        return self.excute_next()

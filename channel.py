@@ -14,7 +14,7 @@ class DataChannel:
         async with self.condition:
             self.Data = item
             # notify time to start reading if blocking
-            self.condition.notify_all()
+            self.condition.notify()
             # wait until sent data read complete
             while self.Data is not None:
                 await self.condition.wait()
@@ -29,6 +29,6 @@ class DataChannel:
             item = self.Data
             self.Data = None
             # notify reading complete
-            self.condition.notify_all()
+            self.condition.notify()
         self.is_reading = False
         return item
