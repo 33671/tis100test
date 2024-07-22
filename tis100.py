@@ -41,7 +41,7 @@ MOV ACC DOWN
         """)
     load_and_run(2, 2, "MOV ANY DOWN")
 
-
-loop.create_task(input_puter())
-loop.create_task(main())
-loop.run_until_complete(output_puter())
+if __name__ == "__main__":
+    loop.create_task(input_puter())
+    loop.create_task(main())
+    loop.run_until_complete(output_puter())

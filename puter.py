@@ -48,7 +48,7 @@ class Computer:
             line_elements = [i for i in line_trimed.split(
                 " ") if i != "" and i != " "]
             self.lines.append(line_elements)
-        print("labels:", self.labels_index)
+        print(f"{self.X}${self.Y} labels:", self.labels_index)
         inses = gen_syntax(self.lines, self.labels_index)
         if type(inses) == bool:
             raise Exception("!syntax error")
@@ -114,6 +114,8 @@ class Computer:
             return
         if dest_position == "nil":
             self.is_waiting_for_output = False
+            # await asyncio.sleep(2)
+            # print("moving to nil")
             return
         chan = self.get_write_neighbor_channel(dest_position)
         await chan.send(data)
@@ -168,6 +170,7 @@ class Computer:
     async def excute_line(self, index: int) -> int:
         if len(self.instructions) == 0 or len(self.instructions) <= index:
             self.is_waiting_for_input = True
+            print(f"{self.X}${self.Y} Empty Program!!")
             await asyncio.Future()
         ins = self.instructions[index]
         print(f"{self.X}${self.Y} current:", ins)
@@ -269,11 +272,13 @@ class Computer:
 
     async def excute_next(self):
         self.is_running = True
+        # print(f"{self.X}${self.Y} line started")
         self.line_number_to_run = await self.excute_line(self.line_number_to_run)
+        # print(f"{self.X}${self.Y} line finished")
         self.is_running = False
         return self
 
-    async def is_blocking(self):
+    def is_blocking(self):
         if self.is_running or self.is_waiting_for_input or self.is_waiting_for_output:
             return True
         return False
