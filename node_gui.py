@@ -16,7 +16,7 @@ class Node:
             dpg.add_string_value(default_value="MOV 1 NIL\nMOV 2 NIL\nMOV 2 NIL\nMOV 2 NIL\nMOV 2 NIL",
                                  tag="string_value"+str(row) + str(col))
         self.draw_arrows()
-        self.draw_values()
+        # self.draw_values()
         with dpg.stage() as self._staging_container_id:
             dpg.add_input_text(width=220, height=201,
                                multiline=True, uppercase=True, show=True, tag=self.edit_tag, source="string_value"+str(row) + str(col))
@@ -36,11 +36,11 @@ class Node:
                 self.run_tag + "line", show=False)
         dpg.configure_item(
             self.run_tag + "line", pmin=[0, 13 * line_num], pmax=[220, 13 * (line_num + 1)], show=True)
-        for text_index,text in enumerate(self.texts_container): 
+        for text_index, text in enumerate(self.texts_container):
             if text_index == line_num:
-                dpg.configure_item(text,color=(0,0,0))
+                dpg.configure_item(text, color=(0, 0, 0))
             else:
-                dpg.configure_item(text,color=(255,255,255))
+                dpg.configure_item(text, color=(255, 255, 255))
         self.current_line = line_num
 
     def set_run_texts(self):
@@ -54,10 +54,10 @@ class Node:
             else:
                 dpg.configure_item(
                     tag, text="")
-    
+
     def get_text(self) -> str:
         return dpg.get_value("string_value"+str(self.Y) + str(self.X))
-
+    
     def switch_edit(self):
         dpg.show_item(self.edit_tag)
         dpg.hide_item(self.run_tag)
@@ -73,6 +73,7 @@ class Node:
         dpg.push_container_stack(parent)
         dpg.unstage(self._staging_container_id)
         dpg.pop_container_stack()
+
     def draw_arrows(self):
         dpg.draw_arrow(p1=[self.X * (220 + 45) + 20 + 110 + 7, self.Y * 250 + 30], p2=[
                        self.X * (220 + 45) + 20 + 110 + 7, self.Y * 250 - 15], parent="computers")
@@ -87,5 +88,6 @@ class Node:
         if self.X != 3:
             dpg.draw_arrow(p1=[(self.X + 1) * 220 + 12 + 54 * self.X, self.Y * 250 + 135], p2=[
                            (self.X + 1) * 220 + 54 * (self.X + 1)+12, self.Y * 250 + 135], parent="computers")
-    def draw_values(self):
+
+    def draw_values(self,ACC:int,BAK:int,WAIT:int,PC:int):
         pass

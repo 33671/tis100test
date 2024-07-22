@@ -77,7 +77,6 @@ class Computer:
                 self.is_waiting_for_input = False
                 return read_data
             self.is_waiting_for_input = False
-            return
         if data_source == 'last':
             chan = self.get_read_neighbor_channel(self.LAST)
             read_data = await chan.read()
